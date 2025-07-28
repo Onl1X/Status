@@ -1,15 +1,19 @@
 services:
-  app:
-    container_name: status_app
-    build: .
+  status-app:
+    container_name: status-app
+    image: onl1x/status-app:latest
+    network_mode: host
+    restart: unless-stopped
     volumes:
-      - "/etc/os-release:/host_root/etc/os-release:ro"
-      - "/etc/hostname:/host_root/etc/hostname:ro"
-      - "/proc:/host_root/proc:ro"
-      - "/home:/home:ro"
-      - "/tmp:/tmp:ro"
-      - "/mnt:/mnt:ro"
-      - "/media:/media:ro"
-      - "/run/media:/run/media:ro"
-    network_mode: "host"
-    restart: "unless-stopped"
+      - /etc/os-release:/host_root/etc/os-release:ro
+      - /etc/hostname:/host_root/etc/hostname:ro
+      - /proc:/host_root/proc:ro
+      - /sys:/host_root/sys:ro
+      - /dev:/host_root/dev:ro
+      - /mnt/ssd:/mnt/ssd:ro
+      - /mnt:/mnt:ro
+      - /var:/var:ro
+      - /boot:/boot:ro
+      - /tmp:/tmp:ro
+      - ./config.json:/app/config.json:ro
+      - /:/host_root:ro

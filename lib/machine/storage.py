@@ -37,14 +37,19 @@ class Storage:
 
 		for fs in filesystems:
 			try:
+				# Check if the mount point exists before trying to get stats
+				if not os.path.exists(filesystems[fs][0]):
+					continue
+					
 				usage = os.statvfs(filesystems[fs][0])
 
-			except PermissionError:
+			except (PermissionError, FileNotFoundError):
 				continue
 
 			# ext4 fs dirty-improvement to show nicely rounded storage size
 			inode_overhead = 0
-			if filesystems[fs][2] == "ext4":
+			fs_type = filesystems[fs][2] if len(filesystems[fs]) > 2 else "unknown"
+			if fs_type == "ext4":
 				inode_size = 256		# Default for mkfs.ext4
 				correction = 1.2
 				inode_overhead = inode_size * usage.f_files * correction
@@ -65,5 +70,11 @@ def nice_path(path):
 
 	elif path.startswith("/boot"):
 		return ["Boot", "sprint"]
+	
+	elif path == "/mnt/ssd":
+		return ["SSD", "storage"]
+	
+	elif path == "/mnt":
+		return ["Mnt", "folder"]
 
 	return [path.split("/")[-1].title(), "folder"]
